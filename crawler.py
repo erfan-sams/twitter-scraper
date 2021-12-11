@@ -7,12 +7,6 @@ from multiprocessing import Pool
 import time
 
 # https://github.com/JustAnotherArchivist/snscrape/blob/master/snscrape/modules/twitter.py
-# example for arguments:
-  # start_date = date.today()
-  # end_date = date(2019, 2, 1)
-  # max_results = 5000       # number of tweets
-
-
 
 class Twitter_scraper:
 
