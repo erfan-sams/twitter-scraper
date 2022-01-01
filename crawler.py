@@ -1,39 +1,42 @@
-
+# https://github.com/JustAnotherArchivist/snscrape/blob/master/snscrape/modules/twitter.py
 import snscrape.modules.twitter as sntwitter
 import pandas as pd
 from random import random
 from datetime import date
-from multiprocessing import Pool
+from multiprocessing.dummy import Pool
 import time
 
-# https://github.com/JustAnotherArchivist/snscrape/blob/master/snscrape/modules/twitter.py
 
 class Twitter_scraper:
-
+  
   def __init__(self,
                max_results: int,
-               all_words = [],
-               exact_pharase=[],
-               any_words = [],
-               none_words = [],
-               hashtags = [],
-               mentioned_users = [],
-               from_users = [],
-               to_users = [],
+               all_words = [],        # Example: ['what’s', 'happening'] · contains both “what’s” and “happening”
+               exact_pharase=[],      # Example: ['happy hour'] · contains the exact phrase “happy hour”
+               any_words = [],        # Example: ['cats', 'dogs'] · contains either “cats” or “dogs” (or both)
+               none_words = [],       # Example: ['cats', 'dogs'] · does not contain “cats” and does not contain “dogs”
+               hashtags = [],         # Example: ['#ThrowbackThursday'] or ['ThrowbackThursday'] · contains the hashtag #ThrowbackThursday
+               mentioned_users = [],  # Example: ['@SFBART', '@Caltrain'] or ['SFBART', 'Caltrain'] · mentions @SFBART or mentions @Caltrain
+               from_users = [],       # Example: ['@Twitter'] or ['Twitter'] · sent from @Twitter
+               to_users = [],         # Example: ['@Twitter'] or ['Twitter'] · sent in reply to @Twitter
+               with_links = True,
+               with_replies = True,
                **kwargs):
     
     self.number_of_user = 0
     self.max_results = max_results
     self.all_words = Twitter_scraper.all_of_these_words(all_words)
-    self.exact_pharase = f'"{exact_pharase}"' if exact_pharase else ''
+    self.exact_pharase = f'\"{exact_pharase}\"' if exact_pharase else ''
     self.any_words = Twitter_scraper.any_of_these_words(any_words)
     self.none_words = Twitter_scraper.none_of_these_words(none_words)
     self.these_hashtags = Twitter_scraper.any_of_these_hashtags(hashtags)
     self.mentioned_users = Twitter_scraper.mentioning_these_users(mentioned_users)
+    self.with_links = f'-filter:links' if not with_links else ''
+    self.with_replies = f'-filter:replies' if not with_replies else ''
 
     self.query_dict = {'all_words':self.all_words, 'exact_pharase':self.exact_pharase,
                   'any_words':self.any_words, 'none_words':self.none_words, 'these_hashtags':self.these_hashtags,
-                  'mentioned_users':self.mentioned_users}
+                  'mentioned_users':self.mentioned_users, 'with_links': self.with_links, 'with_replies':self.with_replies}
 
     self.query_dict['from'] = Twitter_scraper.f_or_t_users(from_users, 'from')
     self.query_dict['to'] = Twitter_scraper.f_or_t_users(to_users, 'to')
@@ -81,8 +84,7 @@ class Twitter_scraper:
     tmp_list = ['@'+ h.replace('@','') for h in users]
     return ('(' + ' OR '.join(tmp_list) + ')')
 
-  @staticmethod
-  def create_query(query_dict):
+  def create_query(self, query_dict):
     tmp_string = ''
     res = dict([(key, val) for key, val in 
            query_dict.items() if val])
@@ -97,7 +99,7 @@ class Twitter_scraper:
     # Creating list to append tweet data
     tweets_list = []
     try:
-      # Using TwitterUserScraper  TwitterSearchScraper to scrape data and append tweets to list
+      # Using TwitterSearchScraper to scrape data and append tweets to list
       scraper = sntwitter.TwitterSearchScraper(query)
       i = 0
       for tweet in scraper.get_items(): #declare a username
@@ -123,38 +125,27 @@ class Twitter_scraper:
 
     # Creating a dataframe from the tweets list above 
     tweets_df = pd.DataFrame(tweets_list, columns=['Datetime', 'Tweet Id', 'Text', 'Reply Count',
-                                                    'Retweet Count', 'Like Count', 'username', 'Lang', 'Media', 'Hashtags'])
+                                                    'Retweet Count', 'Like Count', 'Username', 'Lang', 'Media', 'Hashtags'])
     return tweets_df
 
 
+  def basic_mode(self):
+    query = self.create_query(self.query_dict)
+    return self.crawler(query)
 
   def user_crawler(self, user):
     tmp_dict = self.query_dict.copy()
     tmp_dict['from'] = (f'(from:{user})')
-    query = Twitter_scraper.create_query(tmp_dict)
+    query = self.create_query(tmp_dict)
     del tmp_dict
     return self.crawler(query)
 
 
   def user_mode(self, user_list):   
     user_crawler = self.user_crawler 
-    pool = Pool(20)
+    pool = Pool(22)
     df_list = pool.map(user_crawler, user_list)
     pool.close()
     pool.join()
     result_df = pd.concat(df_list, ignore_index=True)
     return result_df
-
-
-
-
-from_users = ['CNN', 'FoxNews', 'ABC', 'BBCWorld', 'TIME', 'CBSNews', 'NBCNews', 'MSNBC','nytimes','washingtonpost']
-scraper = Twitter_scraper(max_results=10000, until="2020-01-01", since="2019-01-01", lang="en", from_users=from_users)
-tmp_query_dict = scraper.query_dict
-my_query = Twitter_scraper.create_query(tmp_query_dict)
-result = scraper.crawler(my_query)
-result.to_csv('test.csv', index=False)
-print(result.shape)
-
-
-
