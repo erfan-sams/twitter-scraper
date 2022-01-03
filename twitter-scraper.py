@@ -22,6 +22,21 @@ class Twitter_scraper:
                with_links = True,
                with_replies = True,
                **kwargs):
+      """
+      :param max_results: Number of tweets will be captured per user.
+      :param all_words: ['what’s', 'happening'] · contains both “what’s” and “happening”
+      :param exact_pharase: ['happy hour'] · contains the exact phrase “happy hour”
+      :param any_words: ['cats', 'dogs'] · contains either “cats” or “dogs” (or both)
+      :param none_words: ['cats', 'dogs'] · does not contain “cats” and does not contain “dogs”
+      :param hashtags: ['#ThrowbackThursday'] or ['ThrowbackThursday'] · contains the hashtag #ThrowbackThursday
+      :param mentioned_users: ['@SFBART', '@Caltrain'] or ['SFBART', 'Caltrain'] · mentions @SFBART or mentions @Caltrain
+      :param from_users: ['@Twitter'] or ['Twitter'] · sent from @Twitter
+      :param to_users: ['@Twitter'] or ['Twitter'] · sent in reply to @Twitter
+      :param with_links: Tweets contain link
+      :param with_replies: Tweets as a replies
+      :param kwargs: The setting of start_time, end_time, and language of the tweets
+      
+      """
     
     self.number_of_user = 0
     self.max_results = max_results
@@ -96,6 +111,14 @@ class Twitter_scraper:
 
 
   def crawler(self, query, error_counter=0):
+    
+    """
+    This is the main function to send the query to Twitter and collect the tweets.
+    
+    :param query: The Twitter query that we built it.
+    """
+    
+    
     # Creating list to append tweet data
     tweets_list = []
     try:
@@ -134,6 +157,11 @@ class Twitter_scraper:
     return self.crawler(query)
 
   def user_crawler(self, user):
+    """
+    Calling the query function for a specefic user.
+    
+    :param user: Account username in Twitter
+    """
     tmp_dict = self.query_dict.copy()
     tmp_dict['from'] = (f'(from:{user})')
     query = self.create_query(tmp_dict)
@@ -141,7 +169,13 @@ class Twitter_scraper:
     return self.crawler(query)
 
 
-  def user_mode(self, user_list):   
+  def user_mode(self, user_list): 
+    """
+    parallelize the process with multithreading(call query function per user)
+    
+    :param user_list: List of users that we going to collect their tweets.
+    """
+    
     user_crawler = self.user_crawler 
     pool = Pool(22)
     df_list = pool.map(user_crawler, user_list)
