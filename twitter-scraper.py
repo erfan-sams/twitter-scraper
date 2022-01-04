@@ -11,14 +11,14 @@ class TwitterScraper:
   
   def __init__(self,
                max_results: int,
-               all_words = [],        # Example: ['what’s', 'happening'] · contains both “what’s” and “happening”
-               exact_pharase=[],      # Example: ['happy hour'] · contains the exact phrase “happy hour”
-               any_words = [],        # Example: ['cats', 'dogs'] · contains either “cats” or “dogs” (or both)
-               none_words = [],       # Example: ['cats', 'dogs'] · does not contain “cats” and does not contain “dogs”
-               hashtags = [],         # Example: ['#ThrowbackThursday'] or ['ThrowbackThursday'] · contains the hashtag #ThrowbackThursday
-               mentioned_users = [],  # Example: ['@SFBART', '@Caltrain'] or ['SFBART', 'Caltrain'] · mentions @SFBART or mentions @Caltrain
-               from_users = [],       # Example: ['@Twitter'] or ['Twitter'] · sent from @Twitter
-               to_users = [],         # Example: ['@Twitter'] or ['Twitter'] · sent in reply to @Twitter
+               all_words = [],        
+               exact_pharase=[],      
+               any_words = [],        
+               none_words = [],       
+               hashtags = [],        
+               mentioned_users = [],  
+               from_users = [],       
+               to_users = [],         
                with_links = True,
                with_replies = True,
                **kwargs):
