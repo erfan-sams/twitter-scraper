@@ -7,7 +7,7 @@ from multiprocessing.dummy import Pool
 import time
 
 
-class Twitter_scraper:
+class TwitterScraper:
   
   def __init__(self,
                max_results: int,
@@ -40,12 +40,12 @@ class Twitter_scraper:
     
     self.number_of_user = 0
     self.max_results = max_results
-    self.all_words = Twitter_scraper.all_of_these_words(all_words)
+    self.all_words = TwitterScraper.all_of_these_words(all_words)
     self.exact_pharase = f'\"{exact_pharase}\"' if exact_pharase else ''
-    self.any_words = Twitter_scraper.any_of_these_words(any_words)
-    self.none_words = Twitter_scraper.none_of_these_words(none_words)
-    self.these_hashtags = Twitter_scraper.any_of_these_hashtags(hashtags)
-    self.mentioned_users = Twitter_scraper.mentioning_these_users(mentioned_users)
+    self.any_words = TwitterScraper.any_of_these_words(any_words)
+    self.none_words = TwitterScraper.none_of_these_words(none_words)
+    self.these_hashtags = TwitterScraper.any_of_these_hashtags(hashtags)
+    self.mentioned_users = TwitterScraper.mentioning_these_users(mentioned_users)
     self.with_links = f'-filter:links' if not with_links else ''
     self.with_replies = f'-filter:replies' if not with_replies else ''
 
@@ -53,8 +53,8 @@ class Twitter_scraper:
                   'any_words':self.any_words, 'none_words':self.none_words, 'these_hashtags':self.these_hashtags,
                   'mentioned_users':self.mentioned_users, 'with_links': self.with_links, 'with_replies':self.with_replies}
 
-    self.query_dict['from'] = Twitter_scraper.f_or_t_users(from_users, 'from')
-    self.query_dict['to'] = Twitter_scraper.f_or_t_users(to_users, 'to')
+    self.query_dict['from'] = TwitterScraper.f_or_t_users(from_users, 'from')
+    self.query_dict['to'] = TwitterScraper.f_or_t_users(to_users, 'to')
 
     for key, value in kwargs.items():
         self.query_dict[key] = (f'({key}:{value})')
