@@ -61,33 +61,7 @@ this mode send a request per twitter account. number of threads set as 22 but fe
 result = scraper.user_mode(user_list)
 result.to_csv('test.csv', index=False)
 ```
-I defined the below function for my work you can use it if you like :)
 
-```python
-def write_file(path, file_format, user_list):
-  number_of_users = len(user_list) - 1
-  tmp_list = []
-  for n in range(1, ((number_of_users//50)+2)):
-    try:
-      tmp_df = scraper.user_mode(user_list[50*(n-1):50*n])
-      tmp_list.append(tmp_df)
-    except:
-      pass
-  result_df = pd.concat(tmp_list, ignore_index=True)
-
-  compression_opts = dict(method='zip',
-                      archive_name='tweets.csv')
-  print('number of tweets', result_df.shape[0])
-  exec(f"result_df.to_{file_format}('{path}', index=False, compression=compression_opts)")
-
-path = 'test.csv'
-# feel free to set your format!
-# for intance that's can be a csv, json, pickle, ...
-# pay attention to df.to_format
-file_format = 'csv'
-write_file(path, file_format, user_list)
-
-```
 ### Coalb link
 There are some tricky things you must do before using this library on colab
 hence default python of colab is 3.7 and we need version 3.8 or higher and for that reason, we must run these code on colab. but that's not enogh!!!
