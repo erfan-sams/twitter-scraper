@@ -41,7 +41,7 @@ class TwitterScraper:
     self.number_of_user = 0
     self.max_results = max_results
     self.all_words = TwitterScraper.all_of_these_words(all_words)
-    self.exact_pharase = f'\"{exact_pharase}\"' if exact_pharase else ''
+    self.exact_pharase = Twitter_scraper.any_of_these_exact_pharase(exact_pharase)
     self.any_words = TwitterScraper.any_of_these_words(any_words)
     self.none_words = TwitterScraper.none_of_these_words(none_words)
     self.these_hashtags = TwitterScraper.any_of_these_hashtags(hashtags)
@@ -78,6 +78,12 @@ class TwitterScraper:
     if not any_words:
       return ''
     return ('(' + ' OR '.join(any_words) + ')')
+  
+    @staticmethod
+  def any_of_these_exact_pharase(exact_pharase):
+    if not exact_pharase:
+      return ''
+    return ('(\"' + '\" OR \"'.join(exact_pharase) + '\")')
 
   @staticmethod
   def none_of_these_words(none_words):
