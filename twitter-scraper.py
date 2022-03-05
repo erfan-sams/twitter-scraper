@@ -153,8 +153,8 @@ class TwitterScraper:
       print(f"query: {query} , {e}")
 
     # Creating a dataframe from the tweets list above 
-    tweets_df = pd.DataFrame(tweets_list, columns=['Datetime', 'Tweet Id', 'Text', 'Reply Count',
-                                                    'Retweet Count', 'Like Count', 'Username', 'Lang', 'Media', 'Hashtags'])
+    tweets_df = pd.DataFrame(tweets_list, columns=['datetime', 'tweet_id', 'text', 'reply_count',
+                                                    'retweet_count', 'like_count', 'username', 'lang', 'media', 'hashtags'])
     return tweets_df
 
 
